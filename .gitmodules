@@ -1,0 +1,3 @@
+[submodule "CmdMessenger"]
+	path = CmdMessenger
+	url = https://github.com/dreamcat4/CmdMessenger.git
