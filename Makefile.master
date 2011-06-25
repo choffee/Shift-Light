@@ -224,7 +224,7 @@ define run-cxx
 endef
 
 # Rules.
-.PHONY : all clean upload monitor upload_monitor
+.PHONY : all clean upload monitor upload_monitor tags
 
 all : $(BUILD_DIR) $(IMAGE).hex
 
@@ -282,5 +282,8 @@ monitor :
 	$(run-monitor)
 
 upload_monitor : upload monitor
+
+tags:
+	find . -iname "*.cpp" -or -iname "*.pde" -or -iname "*.h" |ctags -L-
 
 -include $(wildcard $(BUILD_DIR)/.*.dep))
