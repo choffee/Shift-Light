@@ -2,5 +2,5 @@
 	path = CmdMessenger
 	url = https://github.com/dreamcat4/CmdMessenger.git
 [submodule "arduino-base64"]
-	path = arduino-base64
+	path = Base64
 	url = https://github.com/adamvr/arduino-base64.git

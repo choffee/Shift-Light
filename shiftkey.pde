@@ -1,16 +1,20 @@
 // This example demonstrates CmdMessenger's callback  & attach methods
 // For Arduino Uno and Arduino Duemilanove board (may work with other)
 
+#include <stdint.h>
 // Download these into your Sketches/libraries/ folder...
 
 // CmdMessenger library available from https://github.com/dreamcat4/cmdmessenger
 #include <CmdMessenger/CmdMessenger.h>
 
 // Base64 library available from https://github.com/adamvr/arduino-base64
-#include <arduino-base64/Base64.h>
+#include <Base64/Base64.h>
 
 // Streaming4 library available from http://arduiniana.org/libraries/streaming/
 #include <streaming/Streaming.h>
+
+// Include my lights lib
+// #include <lights.h>
 
 // Mustnt conflict / collide with our message payload data. Fine if we use base64 library ^^ above
 char field_separator = ',';
@@ -103,7 +107,7 @@ void bens_msg()
   while ( cmdMessenger.available() )
   {
     char buf[350] = { '\0' };
-    cmdMessenger.copyString(buf, 350);
+    cmdMessenger.copyString(buf,(uint8_t) 350);
     if(buf[0])
       cmdMessenger.sendCmd(kACK, buf);
   }
@@ -116,7 +120,6 @@ void jerrys_base64_data()
 
   // Afer base64_decode(), we just parse the buffer and unpack it into your
   // target / desination data type eg bitmask, float, double, whatever.
-  char buf[350] = { '\0' };
   boolean data_msg_printed = false;
   cmdMessenger.sendCmd(kACK,"jerrys cmd recieved");
 
@@ -129,7 +132,7 @@ void jerrys_base64_data()
       data_msg_printed = true;
     }
     char buf[350] = { '\0' };
-    cmdMessenger.copyString(buf, 350);
+    cmdMessenger.copyString(buf,(uint8_t) 350);
     if(buf[0])
     {
       char decode_buf[350] = { '\0' };
@@ -205,8 +208,8 @@ void setup()
 // ------------------ M A I N ( ) --------------------------------------------
 
 // Timeout handling
-long timeoutInterval = 2000; // 2 seconds
-long previousMillis = 0;
+unsigned long timeoutInterval = 2000; // 2 seconds
+unsigned long previousMillis = 0;
 int counter = 0;
 
 void timeout()
