@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 // Download these into your Sketches/libraries/ folder...
+using namespace std;
 
 // CmdMessenger library available from https://github.com/dreamcat4/cmdmessenger
 #include <CmdMessenger/CmdMessenger.h>
@@ -14,7 +15,8 @@
 #include <streaming/Streaming.h>
 
 // Include my lights lib
-// #include <lights.h>
+#include <lights.h>
+using Arduino::Lights::TriColour;
 
 // Mustnt conflict / collide with our message payload data. Fine if we use base64 library ^^ above
 char field_separator = ',';
@@ -22,6 +24,10 @@ char command_separator = ';';
 
 // Attach a new CmdMessenger object to the default Serial port
 CmdMessenger cmdMessenger = CmdMessenger(Serial, field_separator, command_separator);
+
+// Turn on the light
+byte lid[] = { 1, 2, 3};
+TriColour triColour0 = TriColour(lid);
 
 
 // ------------------ S E R I A L  M O N I T O R -----------------------------
@@ -80,7 +86,7 @@ enum
 };
 
 // Define the callback methods here first to get the order right
-extern void bens_msg();
+extern void msg_callback_set_led();
 extern void jerrys_base64_data();
 
 // Commands we send from the PC and want to recieve on the Arduino.
@@ -88,8 +94,8 @@ extern void jerrys_base64_data();
 // They start at the address kSEND_CMDS_END defined ^^ above as 004
 messengerCallbackFunction messengerCallbacks[] = 
 {
-  bens_msg,            // 004 in this example
-  jerrys_base64_data,  // 005
+  msg_callback_set_led, // 004 in this example
+  jerrys_base64_data,   // 005
   NULL
 };
 // Its also possible (above ^^) to implement some symetric commands, when both the Arduino and
@@ -99,17 +105,20 @@ messengerCallbackFunction messengerCallbacks[] =
 
 // ------------------ C A L L B A C K  M E T H O D S -------------------------
 
-void bens_msg()
+void msg_callback_set_led()
 {
   // Message data is any ASCII bytes (0-255 value). But can't contain the field
   // separator, command separator chars you decide (eg ',' and ';')
-  cmdMessenger.sendCmd(kACK,"bens cmd recieved");
+  // Send <LED Number>-<Red 255><G 255><B 255> all padded.
+  // eg 0-003128034
+  cmdMessenger.sendCmd(kACK,"LED set cmd recieved");
   while ( cmdMessenger.available() )
   {
     char buf[350] = { '\0' };
     cmdMessenger.copyString(buf,(uint8_t) 350);
     if(buf[0])
       cmdMessenger.sendCmd(kACK, buf);
+    // Here we would set the LED with this value
   }
 }
 
