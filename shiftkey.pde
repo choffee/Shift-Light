@@ -16,7 +16,7 @@ using namespace std;
 
 // Include my lights lib
 #include <lights.h>
-using Arduino::Lights::TriColour;
+using namespace Arduino::Lights;
 
 // Mustnt conflict / collide with our message payload data. Fine if we use base64 library ^^ above
 char field_separator = ',';
@@ -25,8 +25,8 @@ char command_separator = ';';
 // Attach a new CmdMessenger object to the default Serial port
 CmdMessenger cmdMessenger = CmdMessenger(Serial, field_separator, command_separator);
 
-// Turn on the light
-byte lid[] = { 1, 2, 3};
+// Create triColour LED to play with
+byte lid[] = { 3, 5, 6};
 TriColour triColour0 = TriColour(lid);
 
 
@@ -88,6 +88,7 @@ enum
 // Define the callback methods here first to get the order right
 extern void msg_callback_set_led();
 extern void jerrys_base64_data();
+extern void buf_to_rgb(char buffer[], byte result[3]);
 
 // Commands we send from the PC and want to recieve on the Arduino.
 // We must define a callback function in our Arduino program for each entry in the list below vv.
@@ -115,11 +116,39 @@ void msg_callback_set_led()
   while ( cmdMessenger.available() )
   {
     char buf[350] = { '\0' };
-    cmdMessenger.copyString(buf,(uint8_t) 350);
+    cmdMessenger.copyString(buf,(uint8_t) 11);
     if(buf[0])
       cmdMessenger.sendCmd(kACK, buf);
-    // Here we would set the LED with this value
+      // Here we would set the LED with this value
+      if ( buf[0] == '0' )
+      {
+          byte newcolour[3];
+          buf_to_rgb(buf, newcolour);
+          triColour0.setColour(newcolour);
+      }
   }
+}
+
+void buf_to_rgb(char buffer[], byte result[3]) 
+{
+  // Given the buffer in the format 0-RRRGGGBBB
+  // Return an RGB byte array
+  char num[4] = "000";
+  num[0] = buffer[2];
+  num[1] = buffer[3];
+  num[2] = buffer[4];
+  // red
+  result[0] = atoi(num);
+  num[0] = buffer[6];
+  num[1] = buffer[7];
+  num[2] = buffer[8];
+  // green
+  result[1] = atoi(num);
+  num[0] = buffer[0];
+  num[1] = buffer[10];
+  num[2] = buffer[11];
+  // blue
+  result[2] = atoi(num);
 }
 
 void jerrys_base64_data()
