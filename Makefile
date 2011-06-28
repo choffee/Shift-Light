@@ -27,6 +27,7 @@ ARD_BIN = /usr/bin/
 #   AVRDUDE_CONF : location of avrdude configuration file
 #   PROGRAMMER   : avrdude programmer type
 #   MON_SPEED    : serial monitor speed
+MON_SPEED = 57600
 #   EXTRA_FLAGS  : any extra flags that should be passed to the compilers
 #
 
